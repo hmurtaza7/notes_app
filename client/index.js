@@ -4,12 +4,20 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
+import cookie from 'react-cookies'
+
 import App from './App';
 import { configureStore } from './store';
+import { AUTH_USER } from './modules/Auth/AuthActions';
 
 // Initialize store
 const store = configureStore(window.__INITIAL_STATE__);
 const mountApp = document.getElementById('root');
+const token = cookie.load('token');
+
+if (token) {  
+  store.dispatch({ type: AUTH_USER });
+}
 
 render(
   <AppContainer>

@@ -1,3 +1,5 @@
+import cookie from 'react-cookies'
+
 import callApi from '../../util/apiCaller';
 
 // Export Constants
@@ -20,6 +22,8 @@ export function addNoteRequest(note) {
         title: note.title,
         content: note.content,
       },
+    }, {
+      'Authorization': cookie.load('token'),
     }).then(res => dispatch(addNote(res.note)));
   };
 }
@@ -33,7 +37,9 @@ export function addNotes(notes) {
 
 export function fetchNotes() {
   return (dispatch) => {
-    return callApi('notes').then(res => {
+    return callApi('notes', 'get', {}, {
+      'Authorization': cookie.load('token'),
+    }).then(res => {
       dispatch(addNotes(res.notes));
     });
   };
@@ -41,7 +47,9 @@ export function fetchNotes() {
 
 export function fetchNote(cuid) {
   return (dispatch) => {
-    return callApi(`notes/${cuid}`).then(res => dispatch(addNote(res.note)));
+    return callApi(`notes/${cuid}`, 'get', {}, {
+      'Authorization': cookie.load('token'),
+    }).then(res => dispatch(addNote(res.note)));
   };
 }
 
@@ -54,6 +62,8 @@ export function deleteNote(cuid) {
 
 export function deleteNoteRequest(cuid) {
   return (dispatch) => {
-    return callApi(`notes/${cuid}`, 'delete').then(() => dispatch(deleteNote(cuid)));
+    return callApi(`notes/${cuid}`, 'delete', {}, {
+      'Authorization': cookie.load('token'),
+    }).then(() => dispatch(deleteNote(cuid)));
   };
 }

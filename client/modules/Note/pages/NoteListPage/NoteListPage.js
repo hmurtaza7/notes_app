@@ -8,12 +8,20 @@ import NoteCreateWidget from '../../components/NoteCreateWidget/NoteCreateWidget
 // Import Actions
 import { addNoteRequest, fetchNotes, deleteNoteRequest } from '../../NoteActions';
 import { toggleaddNote } from '../../../App/AppActions';
+import { protectedTestRequest } from '../../../Auth/AuthActions';
 
 // Import Selectors
 import { getShowaddNote } from '../../../App/AppReducer';
 import { getNotes } from '../../NoteReducer';
 
 class NoteListPage extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.props.dispatch(protectedTestRequest());
+  }
+
   componentDidMount() {
     this.props.dispatch(fetchNotes());
   }

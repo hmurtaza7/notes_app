@@ -31,6 +31,7 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { match, RouterContext } from 'react-router';
 import Helmet from 'react-helmet';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 // Import required modules
 import routes from '../client/routes';
@@ -127,9 +128,11 @@ app.use((req, res, next) => {
     return fetchComponentData(store, renderProps.components, renderProps.params)
       .then(() => {
         const initialView = renderToString(
-          <Provider store={store}>
-            <RouterContext {...renderProps} />
-          </Provider>
+          <MuiThemeProvider>
+            <Provider store={store}>
+              <RouterContext {...renderProps} />
+            </Provider>
+          </MuiThemeProvider>
         );
         const finalState = store.getState();
 

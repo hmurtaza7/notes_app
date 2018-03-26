@@ -1,4 +1,5 @@
 import Note from '../models/note';
+import User from '../models/user';
 import cuid from 'cuid';
 import slug from 'limax';
 import sanitizeHtml from 'sanitize-html';
@@ -10,11 +11,29 @@ import sanitizeHtml from 'sanitize-html';
  * @returns void
  */
 export function getNotes(req, res) {
-  Note.find().sort('-dateAdded').exec((err, notes) => {
-    if (err) {
-      res.status(500).send(err);
+  if (!req.headers.authorization) {
+    res.status(403).end();
+    return;
+  }
+
+  User.findOne({
+    token: req.headers.authorization,
+  }, (err, user) => {
+    if(err) {
+      res.status(403).end();
     }
-    res.json({ notes });
+
+    if (user) {
+      Note.find({ user: user._id }).sort('-dateAdded').exec((err, notes) => {
+        if (err) {
+          res.status(500).send(err);
+        }
+        res.json({ notes });
+      });
+    }
+    else {
+      res.status(403).end();
+    }
   });
 }
 
@@ -25,23 +44,43 @@ export function getNotes(req, res) {
  * @returns void
  */
 export function addNote(req, res) {
-  if (!req.body.note.title || !req.body.note.content) {
+  if (!req.headers.authorization) {
     res.status(403).end();
+    return;
   }
 
-  const newNote = new Note(req.body.note);
+  if (!req.body.note.title || !req.body.note.content) {
+    res.status(403).end();
+    return;
+  }
 
-  // Let's sanitize inputs
-  newNote.title = sanitizeHtml(newNote.title);
-  newNote.content = sanitizeHtml(newNote.content);
-
-  newNote.slug = slug(newNote.title.toLowerCase(), { lowercase: true });
-  newNote.cuid = cuid();
-  newNote.save((err, saved) => {
-    if (err) {
-      res.status(500).send(err);
+  User.findOne({
+    token: req.headers.authorization,
+  }, (err, user) => {
+    if(err) {
+      res.status(403).end();
     }
-    res.json({ note: saved });
+
+    if (user) {
+      const newNote = new Note(req.body.note);
+
+      // Let's sanitize inputs
+      newNote.title = sanitizeHtml(newNote.title);
+      newNote.content = sanitizeHtml(newNote.content);
+
+      newNote.slug = slug(newNote.title.toLowerCase(), { lowercase: true });
+      newNote.cuid = cuid();
+      newNote.user = user._id;
+      newNote.save((err, saved) => {
+        if (err) {
+          res.status(500).send(err);
+        }
+        res.json({ note: saved });
+      });
+    }
+    else {
+      res.status(403).end();
+    }
   });
 }
 
@@ -73,7 +112,7 @@ export function deleteNote(req, res) {
     }
 
     note.remove(() => {
-      res.status(200).end();
+      res.json({ cuid: cuid });
     });
   });
 }

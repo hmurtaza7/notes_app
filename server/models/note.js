@@ -7,6 +7,7 @@ const noteSchema = new Schema({
   slug: { type: 'String', required: true },
   cuid: { type: 'String', required: true },
   dateAdded: { type: 'Date', default: Date.now, required: true },
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
 export default mongoose.model('Note', noteSchema);

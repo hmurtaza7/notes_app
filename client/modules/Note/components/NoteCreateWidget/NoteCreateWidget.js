@@ -8,9 +8,13 @@ import styles from './NoteCreateWidget.css';
 
 export class NoteCreateWidget extends Component {
 
-  initialState = {
-    title: '',
-    content: '',
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      title: '',
+      content: '',
+    };
   }
 
   addNote = () => {
@@ -38,6 +42,7 @@ export class NoteCreateWidget extends Component {
             hintText="Title"
             fullWidth={true}
             onChange={this.handleTitle}
+            value={this.state.title}
           />
           <TextField
             hintText="Content"
@@ -45,6 +50,7 @@ export class NoteCreateWidget extends Component {
             multiLine={true}
             rows={5}
             onChange={this.handleContent}
+            value={this.state.content}
           />
         </CardText>
         <CardActions>

@@ -4,7 +4,7 @@ import {Card, CardActions, CardHeader, CardTitle, CardText} from 'material-ui/Ca
 import FlatButton from 'material-ui/FlatButton';
 
 // Import Style
-import styles from './NoteListItem.css';
+// import styles from './NoteListItem.css';
 
 function NoteListItem(props) {
   return(
